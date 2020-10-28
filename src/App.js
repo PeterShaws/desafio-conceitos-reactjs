@@ -4,13 +4,13 @@ import api from "./services/api";
 import "./styles.css";
 
 function App() {
-  const [repositories, setRepositores] = useState([]);
+  const [repositories, setRepositories] = useState([]);
 
   useEffect(() => {
     async function fetchRepositories() {
       try {
         const response = await api.get("repositories");
-        setRepositores(response.data);
+        setRepositories(response.data);
       } catch (error) {
         console.warn(error.response || error);
       }
@@ -26,16 +26,30 @@ function App() {
     };
     try {
       const response = await api.post("repositories", repository);
-      const newRepository = response.data;
-      setRepositores([...repositories, newRepository]);
+      if (response.status === 201) {
+        const newRepository = response.data;
+        setRepositories([...repositories, newRepository]);
+      } else {
+        throw new Error(`${response.statusText} (${response.status})`);
+      }
     } catch (err) {
-      console.warn(err.response || err);
+      console.warn("[ERROR] handleAddRepository:", err.response || err);
     }
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
-    console.log("handleRemoveRepository", id);
+    try {
+      const response = await api.delete(`repositories/${id}`);
+      if (response.status === 204) {
+        setRepositories(
+          repositories.filter((repository) => repository.id !== id)
+        );
+      } else {
+        throw new Error(`${response.statusText} (${response.status})`);
+      }
+    } catch (err) {
+      console.warn("[ERROR] handleRemoveRepository:", err.response || err);
+    }
   }
 
   return (
