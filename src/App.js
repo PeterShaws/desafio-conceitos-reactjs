@@ -20,13 +20,13 @@ function App() {
 
   async function handleAddRepository() {
     const repository = {
-      title: `Repository #${repositories.length + 1}`,
+      title: `Repositório #${repositories.length + 1}`,
       url: "https://github.com/PeterShaws/desafio-conceitos-reactjs",
       techs: ["JavaScript", "React", "React DOM"],
     };
     try {
       const response = await api.post("repositories", repository);
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         const newRepository = response.data;
         setRepositories([...repositories, newRepository]);
       } else {
@@ -40,7 +40,7 @@ function App() {
   async function handleRemoveRepository(id) {
     try {
       const response = await api.delete(`repositories/${id}`);
-      if (response.status === 204) {
+      if (response.status === 204 || response.status === 200) {
         setRepositories(
           repositories.filter((repository) => repository.id !== id)
         );
